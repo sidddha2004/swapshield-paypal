@@ -284,7 +284,7 @@ The benchmark uses Amazon Berkeley Objects images (CC BY 4.0); setup and attribu
 
 ## Links
 
-- **Live demo:** **[fill in: Vercel link]**
+- **Live demo:** https://swapshield-paypal.vercel.app
 - **Code:** https://github.com/sidddha2004/swapshield-paypal
 - **Demo video:** **[fill in]**
 - **Postman collection:** https://www.postman.com/orbital-module-specialist-54555134-s-team/swapshield/collection/io1qj5u/swapshield-ai-paypal-dispute-resolution
