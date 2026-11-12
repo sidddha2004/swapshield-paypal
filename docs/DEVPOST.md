@@ -132,7 +132,7 @@ sofas are the weakest category.
 - **Live demo (try it):** **[fill in: Vercel link]**, recorded results from the real models, nothing sent to PayPal
 - **Code:** https://github.com/sidddha2004/swapshield-paypal
 - **Demo video:** **[fill in]**
-- **Postman collection:** **[fill in: public workspace link]**
+- **Postman collection:** https://www.postman.com/orbital-module-specialist-54555134-s-team/swapshield/collection/io1qj5u/swapshield-ai-paypal-dispute-resolution
 - **Team:** Siddharth (solo)
 
 ---
