@@ -26,6 +26,7 @@ from ml.swapshield_ml.auditor import EvidenceAuditor
 from ml.swapshield_ml.pipeline import VerificationRequest, VerifierPipeline
 from service.cases import CaseStore, case_id_for
 from service.evidence_report import render_evidence_report
+from service.replay import ReplayStore, replay_enabled
 from service.paypal_client import EvidenceFile, PayPalError, PayPalGateway, paypal_from_env
 from service.notify import DEADLINE_BUCKETS, Notifier, due_bucket, hours_left
 from service.resolution_agent import ResolutionAgent, ResolutionValidationError, check_action
@@ -40,6 +41,7 @@ _paypal_loaded = False
 _store: CaseStore | None = None
 _agent: ResolutionAgent | None = None
 _notifier: Notifier | None = None
+_replay: ReplayStore | None = None
 ACTIONABLE_DISPUTE_STATUSES = {"WAITING_FOR_SELLER_RESPONSE", "OPEN", "UNDER_REVIEW"}
 DISPUTE_EVENTS = {"CUSTOMER.DISPUTE.CREATED", "CUSTOMER.DISPUTE.UPDATED", "CUSTOMER.DISPUTE.RESOLVED"}
 
@@ -160,6 +162,13 @@ def get_agent() -> ResolutionAgent:
     return _agent
 
 
+def get_replay() -> ReplayStore:
+    global _replay
+    if _replay is None:
+        _replay = ReplayStore()
+    return _replay
+
+
 def get_notifier() -> Notifier:
     global _notifier
     if _notifier is None:
@@ -216,6 +225,7 @@ def health() -> dict[str, object]:
             "qwen3_vl": "loaded" if pipeline and getattr(pipeline.visual_verifier, "is_loaded", False) else "lazy",
             "fusion": "trained" if fusion_path and Path(fusion_path).exists() else "baseline",
             "decision": _decision_kind(),
+            "pipeline": "replay (recorded GPU results for the demo photos)" if replay_enabled() else "live",
         },
         "auditor": {
             "mode": "llm_api" if auditor.configured else "deterministic_fallback",
@@ -267,6 +277,18 @@ async def _run_verification(
     dispatch_weight_grams: float | None,
     return_weight_grams: float | None,
 ) -> dict[str, Any]:
+    if replay_enabled():
+        recorded = get_replay().lookup(dispatch, returned)
+        if recorded is None:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "Replay mode only knows the demo photo pairs in public/demo/ ("
+                    + "; ".join(get_replay().labels())
+                    + "). Run without SWAPSHIELD_PIPELINE=replay, on a GPU, to verify your own photos."
+                ),
+            )
+        return recorded
     request = VerificationRequest(
         dispatch_image=dispatch,
         return_image=returned,

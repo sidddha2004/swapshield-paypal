@@ -19,7 +19,13 @@ type Recorded = {
 type DemoData = { cases: PayPalCase[]; recorded: Record<string, Recorded> }
 
 // Deadlines relative to the visitor's clock, so the demo never shows every case as overdue.
-const DUE_IN_HOURS: Record<string, number> = { "CASE-PP-D-27811": 41, "CASE-PP-D-27803": 7 * 24, "CASE-PP-D-27815": 10 * 24 }
+const DUE_IN_HOURS: Record<string, number> = {
+  "CASE-PP-D-27811": 41,
+  "CASE-PP-D-27822": 4 * 24,
+  "CASE-PP-D-27826": 5 * 24,
+  "CASE-PP-D-27803": 7 * 24,
+  "CASE-PP-D-27815": 10 * 24,
+}
 const PROHIBITED = ["fraud", "fraudulent", "scam", "criminal", "guilty", "reject the refund", "block the customer"]
 const ALLOWED: Record<string, ResolutionAction[]> = {
   approve: ["refund_full", "refund_partial"],
@@ -37,7 +43,7 @@ const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 async function load() {
   if (state) return state
-  const response = await fetch("/demo/demo-data.json", { cache: "force-cache" })
+  const response = await fetch("/demo/demo-data.json", { cache: "no-cache" })
   const data = (await response.json()) as DemoData
   recorded = data.recorded
   state = new Map(

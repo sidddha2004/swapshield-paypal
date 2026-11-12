@@ -5,7 +5,7 @@
 **AI that settles PayPal "item not as described" disputes with evidence, not guesses, and a human who signs off.**
 
 [![PayPal](https://img.shields.io/badge/PayPal-Disputes%20%C2%B7%20Payments%20%C2%B7%20Webhooks-003087?logo=paypal)](docs/PAYPAL_INTEGRATION.md)
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -105,18 +105,46 @@ Model details: [docs/MODEL_CARD.md](docs/MODEL_CARD.md).
 
 The [live demo](#links) runs the full dispute desk in your browser. It has no GPU, so
 each verification and agent proposal replays the result **recorded from the real
-SwapShield API** for three disputes: a matching lamp (refund), a different table
-(evidence to PayPal) and dark photos of a mouse (ask for clearer photos). Confirming
+SwapShield API** for five disputes: a matching lamp and chair (refund), two tables
+that came back as different tables (evidence to PayPal) and dark photos of a mouse
+(ask for clearer photos). Confirming
 applies the same safety rules as the server and sends nothing to PayPal. Hosting
 config: `vercel.json`; demo data: `public/demo/`; replay logic: `lib/demo.ts`.
 
 ### Requirements
 
-- Python 3.10+ and Node.js 22+
+- Python 3.11+ and Node.js 22+
 - An NVIDIA GPU with about 6 GB free for live verification (DINOv2-small and Qwen3-VL-4B in 4-bit). Everything else runs without one.
 - A PayPal developer account for the sandbox (optional: mock mode needs none)
 
-### Run locally (mock PayPal, no account needed)
+### Run the real API without a GPU (replay mode, about 5 minutes)
+
+The whole backend runs on any laptop: the FastAPI service, PayPal (mock or sandbox),
+the resolution agent, every safety rule, the evidence PDFs, alerts and the Postman
+checks. Only the vision models are replaced: for the five demo photo pairs in
+`public/demo/`, verification returns the result the real models produced on a GPU.
+Any other photo is refused with a clear message; replay never invents a result.
+
+```bash
+git clone https://github.com/sidddha2004/swapshield-paypal.git
+cd swapshield-paypal
+python -m venv venv
+venv\Scripts\activate            # macOS/Linux: source venv/bin/activate
+python -m pip install -e "ml[replay]"
+cp .env.example .env             # keeps PAYPAL_MODE=mock
+```
+
+```powershell
+$env:SWAPSHIELD_PIPELINE="replay"; python -m uvicorn service.app:app --host 127.0.0.1 --port 8000
+```
+
+(macOS/Linux: `SWAPSHIELD_PIPELINE=replay python -m uvicorn service.app:app --host 127.0.0.1 --port 8000`.)
+Then run the dashboard (`npm install --no-package-lock` and `npm run dev`) or the
+Postman collection, and verify each dispute with its photos from `public/demo/`
+(`case-pp-d-<number>-dispatch.jpg` and `-return.jpg`). All 29 Postman assertions pass
+in this mode.
+
+### Run everything live, with a GPU (mock PayPal, no account needed)
 
 ```bash
 git clone https://github.com/sidddha2004/swapshield-paypal.git
@@ -184,7 +212,7 @@ sheet. Setup: [docs/ZAPIER.md](docs/ZAPIER.md).
 | Backend | Python, FastAPI, SQLite case store with an append-only action log, Pillow for the evidence PDF |
 | Frontend | TypeScript, Next.js on Vite (vinext), Tailwind CSS, shadcn/ui |
 | Integrations | PayPal REST APIs (standard-library client plus a mock client), Postman, Zapier |
-| Quality | 28 workflow tests, 46 ML tests, Postman assertions, held-out benchmark |
+| Quality | 33 workflow tests, 46 ML tests, Postman assertions, held-out benchmark |
 
 ```
 app/, components/, lib/   dashboard (dispute desk, live verify, evaluation, pipeline)

@@ -1,0 +1,587 @@
+{
+  "source": "public/demo/demo-data.json",
+  "pairs": [
+    {
+      "label": "RGB wired gaming mouse (CASE-PP-D-27803)",
+      "photos": {
+        "dispatch": "public/demo/case-pp-d-27803-dispatch.jpg",
+        "return": "public/demo/case-pp-d-27803-return.jpg"
+      },
+      "dispatch_fingerprint": "3fc3ba2fade4f7a7ff3b8120c66152f3a898f0cb41f746405a5b5ace2692bdbd",
+      "return_fingerprint": "b6583db1de93ab499936eb3bd1dfc14acc2f92fbf71c6a4507cde1e946136341",
+      "recorded_on": "2026-11-12 19:13 IST",
+      "verification": {
+        "risk": {
+          "probability": 0.02327473394743345,
+          "score": 2,
+          "decision": "recapture",
+          "reasons": [
+            "Image quality is below the evidence threshold; capture clearer product photos"
+          ]
+        },
+        "features": {
+          "vision_similarity": 0.698654,
+          "vlm_mismatch": 0.050000000000000044,
+          "serial_mismatch": 0.0,
+          "weight_delta": 0.01,
+          "image_quality": 0.31477
+        },
+        "vlm_assessment": {
+          "evidence_sufficient": true,
+          "same_product_likelihood": 0.95,
+          "mismatch_confidence": 0.05,
+          "observations": [
+            {
+              "attribute": "logo",
+              "dispatch_value": "G-shaped logo",
+              "return_value": "G-shaped logo",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "color",
+              "dispatch_value": "black",
+              "return_value": "black",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "shape",
+              "dispatch_value": "ergonomic curve",
+              "return_value": "ergonomic curve",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "accessories",
+              "dispatch_value": "wired",
+              "return_value": "wired",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            }
+          ],
+          "missing_evidence": []
+        },
+        "quality": {
+          "dispatch": {
+            "score": 0.31477,
+            "brightness": 0.393354,
+            "contrast": 0.477719,
+            "sharpness": 0.133621
+          },
+          "return": {
+            "score": 0.319491,
+            "brightness": 0.283622,
+            "contrast": 0.582739,
+            "sharpness": 0.148956
+          }
+        },
+        "evidence_sources": [
+          "dispatch_image",
+          "return_image",
+          "dispatch_record",
+          "return_record",
+          "weight_record"
+        ],
+        "policy_note": "Recommendation only; a human confirms every adverse outcome.",
+        "auditor_assessment": {
+          "recommendation_support": "needs_more_evidence",
+          "evidence_consistent": true,
+          "contradictions": [],
+          "missing_evidence": [
+            "Capture clearer dispatch and return product images"
+          ],
+          "reviewer_summary": "The available evidence supports requesting another capture before human review.",
+          "checked_evidence_ids": [
+            "dispatch_image",
+            "return_image",
+            "dispatch_record",
+            "return_record",
+            "weight_record"
+          ],
+          "source": "deterministic_fallback",
+          "api_status": "not_configured",
+          "model": null,
+          "latency_ms": 0.0,
+          "authority": "advisory_only"
+        }
+      }
+    },
+    {
+      "label": "Walnut side table (CASE-PP-D-27811)",
+      "photos": {
+        "dispatch": "public/demo/case-pp-d-27811-dispatch.jpg",
+        "return": "public/demo/case-pp-d-27811-return.jpg"
+      },
+      "dispatch_fingerprint": "5084a6bb51daf4302fea5f2f76f53ffa59ccf6d0d848521edd9473ddc66ca4c7",
+      "return_fingerprint": "56190ea3c94b407cf4e62af26095bcc87bbbafbd649510955b3e03e759802ab0",
+      "recorded_on": "2026-11-12 19:13 IST",
+      "verification": {
+        "risk": {
+          "probability": 0.6850030634316099,
+          "score": 69,
+          "decision": "review",
+          "reasons": [
+            "Visual identity is materially different from dispatch evidence"
+          ]
+        },
+        "features": {
+          "vision_similarity": 0.640854,
+          "vlm_mismatch": 0.6,
+          "serial_mismatch": 0.0,
+          "weight_delta": 0.00510204081632653,
+          "image_quality": 0.638098
+        },
+        "vlm_assessment": {
+          "evidence_sufficient": true,
+          "same_product_likelihood": 0.7,
+          "mismatch_confidence": 0.6,
+          "observations": [
+            {
+              "attribute": "shape",
+              "dispatch_value": "cube with open center",
+              "return_value": "rectangular with open center",
+              "severity": "material",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "color",
+              "dispatch_value": "light brown wood grain",
+              "return_value": "dark brown wood grain",
+              "severity": "material",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "dimensions",
+              "dispatch_value": "square base",
+              "return_value": "rectangular base",
+              "severity": "material",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "accessories",
+              "dispatch_value": "no visible accessories",
+              "return_value": "no visible accessories",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            }
+          ],
+          "missing_evidence": []
+        },
+        "quality": {
+          "dispatch": {
+            "score": 0.638098,
+            "brightness": 0.784521,
+            "contrast": 1.0,
+            "sharpness": 0.256855
+          },
+          "return": {
+            "score": 0.680334,
+            "brightness": 0.700608,
+            "contrast": 1.0,
+            "sharpness": 0.425379
+          }
+        },
+        "evidence_sources": [
+          "dispatch_image",
+          "return_image",
+          "dispatch_record",
+          "return_record",
+          "weight_record"
+        ],
+        "policy_note": "Recommendation only; a human confirms every adverse outcome.",
+        "auditor_assessment": {
+          "recommendation_support": "supported",
+          "evidence_consistent": true,
+          "contradictions": [],
+          "missing_evidence": [],
+          "reviewer_summary": "The structured mismatch evidence supports routing this case to a human reviewer.",
+          "checked_evidence_ids": [
+            "dispatch_image",
+            "return_image",
+            "dispatch_record",
+            "return_record",
+            "weight_record"
+          ],
+          "source": "deterministic_fallback",
+          "api_status": "not_configured",
+          "model": null,
+          "latency_ms": 0.0,
+          "authority": "advisory_only"
+        }
+      }
+    },
+    {
+      "label": "Ceramic table lamp (CASE-PP-D-27815)",
+      "photos": {
+        "dispatch": "public/demo/case-pp-d-27815-dispatch.jpg",
+        "return": "public/demo/case-pp-d-27815-return.jpg"
+      },
+      "dispatch_fingerprint": "653b2ce3f161a88b49add2c4e98523235feb2459033cc74e86bdf273b2a2e91b",
+      "return_fingerprint": "48acf38425b7bf5b25313ccb9716dbb8418eaf57b98816248dd8eeb15e22be81",
+      "recorded_on": "2026-11-12 19:13 IST",
+      "verification": {
+        "risk": {
+          "probability": 0.015280092358053632,
+          "score": 2,
+          "decision": "approve",
+          "reasons": [
+            "All available return evidence is consistent with dispatch"
+          ]
+        },
+        "features": {
+          "vision_similarity": 0.983849,
+          "vlm_mismatch": 0.0,
+          "serial_mismatch": 0.0,
+          "weight_delta": 0.004166666666666667,
+          "image_quality": 0.690122
+        },
+        "vlm_assessment": {
+          "evidence_sufficient": true,
+          "same_product_likelihood": 1.0,
+          "mismatch_confidence": 0.0,
+          "observations": [
+            {
+              "attribute": "condition",
+              "dispatch_value": "clean",
+              "return_value": "clean",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "color",
+              "dispatch_value": "black base with gold accents",
+              "return_value": "black base with gold accents",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "shape",
+              "dispatch_value": "cylindrical base with wavy texture",
+              "return_value": "cylindrical base with wavy texture",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "logo",
+              "dispatch_value": "none",
+              "return_value": "none",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            }
+          ],
+          "missing_evidence": []
+        },
+        "quality": {
+          "dispatch": {
+            "score": 0.692713,
+            "brightness": 0.700763,
+            "contrast": 1.0,
+            "sharpness": 0.45621
+          },
+          "return": {
+            "score": 0.690122,
+            "brightness": 0.694512,
+            "contrast": 1.0,
+            "sharpness": 0.45442
+          }
+        },
+        "evidence_sources": [
+          "dispatch_image",
+          "return_image",
+          "dispatch_record",
+          "return_record",
+          "weight_record"
+        ],
+        "policy_note": "Recommendation only; a human confirms every adverse outcome.",
+        "auditor_assessment": {
+          "recommendation_support": "supported",
+          "evidence_consistent": true,
+          "contradictions": [],
+          "missing_evidence": [],
+          "reviewer_summary": "The available structured evidence is consistent with the current approval recommendation.",
+          "checked_evidence_ids": [
+            "dispatch_image",
+            "return_image",
+            "dispatch_record",
+            "return_record",
+            "weight_record"
+          ],
+          "source": "deterministic_fallback",
+          "api_status": "not_configured",
+          "model": null,
+          "latency_ms": 0.0,
+          "authority": "advisory_only"
+        }
+      }
+    },
+    {
+      "label": "Upholstered swivel chair (CASE-PP-D-27822)",
+      "photos": {
+        "dispatch": "public/demo/case-pp-d-27822-dispatch.jpg",
+        "return": "public/demo/case-pp-d-27822-return.jpg"
+      },
+      "dispatch_fingerprint": "0e0a2b195b6b16b606b7a76cd0bc33f06d73f71202aa25c630cb7ec4ee9c3a2a",
+      "return_fingerprint": "7af98062392a260135667f8efec8376c8b333d692d6a0bf6b105d1bd82d659d9",
+      "recorded_on": "2026-11-12 19:13 IST",
+      "verification": {
+        "risk": {
+          "probability": 0.019248162120863322,
+          "score": 2,
+          "decision": "approve",
+          "reasons": [
+            "All available return evidence is consistent with dispatch"
+          ]
+        },
+        "features": {
+          "vision_similarity": 0.823471,
+          "vlm_mismatch": 0.020000000000000018,
+          "serial_mismatch": 0.0,
+          "weight_delta": 0.0035211267605633804,
+          "image_quality": 0.5061
+        },
+        "vlm_assessment": {
+          "evidence_sufficient": true,
+          "same_product_likelihood": 0.98,
+          "mismatch_confidence": 0.02,
+          "observations": [
+            {
+              "attribute": "color",
+              "dispatch_value": "beige fabric, dark wood frame",
+              "return_value": "beige fabric, dark wood frame",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "shape",
+              "dispatch_value": "curved arms, five-star base",
+              "return_value": "curved arms, five-star base",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "logo",
+              "dispatch_value": "none",
+              "return_value": "none",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "condition",
+              "dispatch_value": "clean, no visible damage",
+              "return_value": "clean, no visible damage",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            }
+          ],
+          "missing_evidence": []
+        },
+        "quality": {
+          "dispatch": {
+            "score": 0.566869,
+            "brightness": 0.486749,
+            "contrast": 1.0,
+            "sharpness": 0.302111
+          },
+          "return": {
+            "score": 0.5061,
+            "brightness": 0.359741,
+            "contrast": 1.0,
+            "sharpness": 0.245445
+          }
+        },
+        "evidence_sources": [
+          "dispatch_image",
+          "return_image",
+          "dispatch_record",
+          "return_record",
+          "weight_record"
+        ],
+        "policy_note": "Recommendation only; a human confirms every adverse outcome.",
+        "auditor_assessment": {
+          "recommendation_support": "supported",
+          "evidence_consistent": true,
+          "contradictions": [],
+          "missing_evidence": [],
+          "reviewer_summary": "The available structured evidence is consistent with the current approval recommendation.",
+          "checked_evidence_ids": [
+            "dispatch_image",
+            "return_image",
+            "dispatch_record",
+            "return_record",
+            "weight_record"
+          ],
+          "source": "deterministic_fallback",
+          "api_status": "not_configured",
+          "model": null,
+          "latency_ms": 0.0,
+          "authority": "advisory_only"
+        }
+      }
+    },
+    {
+      "label": "Rustic grey end table (CASE-PP-D-27826)",
+      "photos": {
+        "dispatch": "public/demo/case-pp-d-27826-dispatch.jpg",
+        "return": "public/demo/case-pp-d-27826-return.jpg"
+      },
+      "dispatch_fingerprint": "686b7a3603f797443b9d32d9f902f7fb5508a04579bf86a23ff7185aa28ce978",
+      "return_fingerprint": "3b61932c1f0e929d2d1e60b1074a8905d1876029851514c7820b3469fa6bf78f",
+      "recorded_on": "2026-11-12 19:13 IST",
+      "verification": {
+        "risk": {
+          "probability": 0.9256158938703141,
+          "score": 93,
+          "decision": "review",
+          "reasons": [
+            "Vision-language verifier found product-level discrepancies"
+          ]
+        },
+        "features": {
+          "vision_similarity": 0.687559,
+          "vlm_mismatch": 0.9,
+          "serial_mismatch": 0.0,
+          "weight_delta": 0.005813953488372093,
+          "image_quality": 0.536519
+        },
+        "vlm_assessment": {
+          "evidence_sufficient": true,
+          "same_product_likelihood": 0.3,
+          "mismatch_confidence": 0.9,
+          "observations": [
+            {
+              "attribute": "color",
+              "dispatch_value": "gray wood grain",
+              "return_value": "dark brown",
+              "severity": "material",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "shape",
+              "dispatch_value": "A-frame legs",
+              "return_value": "rectangular legs",
+              "severity": "material",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "packaging",
+              "dispatch_value": "none",
+              "return_value": "none",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            },
+            {
+              "attribute": "condition",
+              "dispatch_value": "clean, unblemished",
+              "return_value": "clean, unblemished",
+              "severity": "minor",
+              "evidence_ids": [
+                "dispatch_image",
+                "return_image"
+              ]
+            }
+          ],
+          "missing_evidence": []
+        },
+        "quality": {
+          "dispatch": {
+            "score": 0.536519,
+            "brightness": 0.429263,
+            "contrast": 1.0,
+            "sharpness": 0.269351
+          },
+          "return": {
+            "score": 0.588081,
+            "brightness": 0.653101,
+            "contrast": 1.0,
+            "sharpness": 0.230376
+          }
+        },
+        "evidence_sources": [
+          "dispatch_image",
+          "return_image",
+          "dispatch_record",
+          "return_record",
+          "weight_record"
+        ],
+        "policy_note": "Recommendation only; a human confirms every adverse outcome.",
+        "auditor_assessment": {
+          "recommendation_support": "supported",
+          "evidence_consistent": true,
+          "contradictions": [],
+          "missing_evidence": [],
+          "reviewer_summary": "The structured mismatch evidence supports routing this case to a human reviewer.",
+          "checked_evidence_ids": [
+            "dispatch_image",
+            "return_image",
+            "dispatch_record",
+            "return_record",
+            "weight_record"
+          ],
+          "source": "deterministic_fallback",
+          "api_status": "not_configured",
+          "model": null,
+          "latency_ms": 0.0,
+          "authority": "advisory_only"
+        }
+      }
+    }
+  ]
+}

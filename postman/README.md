@@ -18,7 +18,7 @@ python scripts/build_postman.py
 
 ## Run it
 
-1. Start the API with mock PayPal (no PayPal account needed). Step 5 runs the real vision models, so this needs the GPU environment:
+1. Start the API with mock PayPal (no PayPal account needed). Step 5 runs the real vision models, so this needs the GPU environment. Without a GPU, add `SWAPSHIELD_PIPELINE=replay` (see the main README): step 5 then replays the recorded result for the bundled mouse photos, and all 29 assertions still pass.
 
    ```bash
    PAYPAL_MODE=mock python -m uvicorn service.app:app --host 127.0.0.1 --port 8000

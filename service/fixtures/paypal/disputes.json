@@ -8,16 +8,28 @@
     "dispute_state": "REQUIRED_ACTION",
     "dispute_life_cycle_stage": "CLAIM",
     "dispute_channel": "INTERNAL",
-    "dispute_amount": { "currency_code": "USD", "value": "39.99" },
+    "dispute_amount": {
+      "currency_code": "USD",
+      "value": "39.99"
+    },
     "seller_response_due_date": "2026-11-18T09:14:22.000Z",
     "disputed_transactions": [
       {
         "seller_transaction_id": "3GG279541U471931P",
         "create_time": "2026-10-30T16:02:10.000Z",
         "transaction_status": "COMPLETED",
-        "gross_amount": { "currency_code": "USD", "value": "39.99" },
+        "gross_amount": {
+          "currency_code": "USD",
+          "value": "39.99"
+        },
         "invoice_number": "ORD-10291",
-        "items": [{ "item_id": "MSE-RGB-102", "item_name": "RGB wired gaming mouse", "item_quantity": "1" }]
+        "items": [
+          {
+            "item_id": "MSE-RGB-102",
+            "item_name": "RGB wired gaming mouse",
+            "item_quantity": "1"
+          }
+        ]
       }
     ],
     "messages": [
@@ -37,16 +49,28 @@
     "dispute_state": "REQUIRED_ACTION",
     "dispute_life_cycle_stage": "CLAIM",
     "dispute_channel": "INTERNAL",
-    "dispute_amount": { "currency_code": "USD", "value": "149.00" },
+    "dispute_amount": {
+      "currency_code": "USD",
+      "value": "149.00"
+    },
     "seller_response_due_date": "2026-11-13T05:40:03.000Z",
     "disputed_transactions": [
       {
         "seller_transaction_id": "8MC585209K746392H",
         "create_time": "2026-10-28T11:20:44.000Z",
         "transaction_status": "COMPLETED",
-        "gross_amount": { "currency_code": "USD", "value": "149.00" },
+        "gross_amount": {
+          "currency_code": "USD",
+          "value": "149.00"
+        },
         "invoice_number": "ORD-10244",
-        "items": [{ "item_id": "TBL-WAL-412", "item_name": "Walnut side table", "item_quantity": "1" }]
+        "items": [
+          {
+            "item_id": "TBL-WAL-412",
+            "item_name": "Walnut side table",
+            "item_quantity": "1"
+          }
+        ]
       }
     ],
     "messages": [
@@ -66,16 +90,28 @@
     "dispute_state": "REQUIRED_ACTION",
     "dispute_life_cycle_stage": "INQUIRY",
     "dispute_channel": "INTERNAL",
-    "dispute_amount": { "currency_code": "USD", "value": "64.50" },
+    "dispute_amount": {
+      "currency_code": "USD",
+      "value": "64.50"
+    },
     "seller_response_due_date": "2026-11-21T12:02:51.000Z",
     "disputed_transactions": [
       {
         "seller_transaction_id": "1XW55219DT063314C",
         "create_time": "2026-11-01T08:45:19.000Z",
         "transaction_status": "COMPLETED",
-        "gross_amount": { "currency_code": "USD", "value": "64.50" },
+        "gross_amount": {
+          "currency_code": "USD",
+          "value": "64.50"
+        },
         "invoice_number": "ORD-10302",
-        "items": [{ "item_id": "LMP-CER-077", "item_name": "Ceramic table lamp", "item_quantity": "1" }]
+        "items": [
+          {
+            "item_id": "LMP-CER-077",
+            "item_name": "Ceramic table lamp",
+            "item_quantity": "1"
+          }
+        ]
       }
     ],
     "messages": [
@@ -83,6 +119,88 @@
         "posted_by": "BUYER",
         "time_posted": "2026-11-09T12:02:51.000Z",
         "content": "The colour is different from the listing. Sent it back last week."
+      }
+    ]
+  },
+  {
+    "dispute_id": "PP-D-27822",
+    "create_time": "2026-11-09T15:20:11.000Z",
+    "update_time": "2026-11-09T15:20:11.000Z",
+    "reason": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED",
+    "status": "WAITING_FOR_SELLER_RESPONSE",
+    "dispute_state": "REQUIRED_ACTION",
+    "dispute_life_cycle_stage": "CLAIM",
+    "dispute_channel": "INTERNAL",
+    "dispute_amount": {
+      "currency_code": "USD",
+      "value": "189.00"
+    },
+    "seller_response_due_date": "2026-11-16T15:20:11.000Z",
+    "disputed_transactions": [
+      {
+        "seller_transaction_id": "6RT41762XJ552301L",
+        "create_time": "2026-11-02T10:12:40.000Z",
+        "transaction_status": "COMPLETED",
+        "gross_amount": {
+          "currency_code": "USD",
+          "value": "189.00"
+        },
+        "invoice_number": "ORD-10318",
+        "items": [
+          {
+            "item_id": "CHR-SWV-260",
+            "item_name": "Upholstered swivel chair",
+            "item_quantity": "1"
+          }
+        ]
+      }
+    ],
+    "messages": [
+      {
+        "posted_by": "BUYER",
+        "time_posted": "2026-11-09T15:20:11.000Z",
+        "content": "The fabric looks lighter than in the photos. I've returned it for a refund."
+      }
+    ]
+  },
+  {
+    "dispute_id": "PP-D-27826",
+    "create_time": "2026-11-10T08:05:37.000Z",
+    "update_time": "2026-11-10T08:05:37.000Z",
+    "reason": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED",
+    "status": "WAITING_FOR_SELLER_RESPONSE",
+    "dispute_state": "REQUIRED_ACTION",
+    "dispute_life_cycle_stage": "CLAIM",
+    "dispute_channel": "INTERNAL",
+    "dispute_amount": {
+      "currency_code": "USD",
+      "value": "119.00"
+    },
+    "seller_response_due_date": "2026-11-19T08:05:37.000Z",
+    "disputed_transactions": [
+      {
+        "seller_transaction_id": "9BF23810LM427561W",
+        "create_time": "2026-11-02T10:12:40.000Z",
+        "transaction_status": "COMPLETED",
+        "gross_amount": {
+          "currency_code": "USD",
+          "value": "119.00"
+        },
+        "invoice_number": "ORD-10325",
+        "items": [
+          {
+            "item_id": "TBL-GRY-188",
+            "item_name": "Rustic grey end table",
+            "item_quantity": "1"
+          }
+        ]
+      }
+    ],
+    "messages": [
+      {
+        "posted_by": "BUYER",
+        "time_posted": "2026-11-10T08:05:37.000Z",
+        "content": "The table wobbles and isn't the finish I ordered. Sent it back."
       }
     ]
   }

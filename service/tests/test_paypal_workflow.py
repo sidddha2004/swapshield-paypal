@@ -7,7 +7,9 @@ tests run on CPU without model downloads.
 from __future__ import annotations
 
 import json
+import os
 import unittest
+from unittest import mock
 from io import BytesIO
 from pathlib import Path
 
@@ -146,7 +148,7 @@ class IngestTests(WorkflowTestBase):
     def test_sync_creates_cases_sorted_by_response_deadline(self) -> None:
         self.sync()
         cases = self.client.get("/v1/cases").json()["cases"]
-        self.assertEqual(len(cases), 3)
+        self.assertEqual(len(cases), 5)
         self.assertEqual(cases[0]["dispute_id"], "PP-D-27811")  # earliest seller_response_due
         self.assertEqual(cases[0]["captured_amount"], "149.00")
         self.assertEqual(cases[0]["currency"], "USD")
@@ -158,7 +160,7 @@ class IngestTests(WorkflowTestBase):
         response = self.client.post("/v1/paypal/webhook", content=json.dumps(event), headers=MOCK_HEADERS)
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()["case_id"], MATCH_CASE)
-        self.assertEqual(len(self.client.get("/v1/cases").json()["cases"]), 3)
+        self.assertEqual(len(self.client.get("/v1/cases").json()["cases"]), 5)
 
     def test_webhook_with_bad_signature_is_rejected(self) -> None:
         event = {"id": "WH-2", "event_type": "CUSTOMER.DISPUTE.CREATED", "resource": {"dispute_id": "PP-D-27803"}}
@@ -286,10 +288,15 @@ class AlertTests(WorkflowTestBase):
         dispute["seller_response_due_date"] = due
         service_app._store.upsert_from_dispute(dispute)
 
+    def park_all(self) -> None:
+        """Move every fixture dispute well outside the alert windows, so tests never depend on today's date."""
+        for dispute in self.paypal.list_disputes():
+            self.set_due_in(dispute["dispute_id"], 500)
+
     def test_new_disputes_alert_once(self) -> None:
         self.sync()
         self.sync()
-        self.assertEqual(len(self.events("dispute.received")), 3)
+        self.assertEqual(len(self.events("dispute.received")), 5)
 
     def test_workflow_events_carry_no_buyer_text(self) -> None:
         self.sync()
@@ -304,6 +311,7 @@ class AlertTests(WorkflowTestBase):
 
     def test_deadline_alerts_once_per_bucket(self) -> None:
         self.sync()
+        self.park_all()
         self.set_due_in("PP-D-27811", 30.5)
         self.set_due_in("PP-D-27803", 200)
         self.set_due_in("PP-D-27815", 5.5)
@@ -318,6 +326,7 @@ class AlertTests(WorkflowTestBase):
 
     def test_resolved_cases_get_no_deadline_alert(self) -> None:
         self.sync()
+        self.park_all()
         self.verify(MATCH_CASE, "match")
         self.execute(MATCH_CASE)
         for dispute_id in ("PP-D-27811", "PP-D-27815"):
@@ -328,12 +337,83 @@ class AlertTests(WorkflowTestBase):
 
     def test_dry_run_records_nothing(self) -> None:
         self.sync()
+        self.park_all()
         self.set_due_in("PP-D-27811", 200)
         self.set_due_in("PP-D-27803", 200)
         self.set_due_in("PP-D-27815", 5)
         dry = self.client.post("/v1/alerts/deadlines?dry_run=true").json()["alerts"]
         self.assertEqual([alert["delivered"] for alert in dry], [False])
         self.assertEqual(len(self.client.post("/v1/alerts/deadlines").json()["alerts"]), 1)
+
+
+class ReplayModeTests(WorkflowTestBase):
+    """SWAPSHIELD_PIPELINE=replay: the real API without a GPU, for the demo photos only."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        service_app._pipeline = None  # replay must never need the vision pipeline
+        self.env = mock.patch.dict(os.environ, {"SWAPSHIELD_PIPELINE": "replay"})
+        self.env.start()
+
+    def tearDown(self) -> None:
+        self.env.stop()
+        super().tearDown()
+
+    def demo_files(self, case: str) -> dict:
+        folder = REPO / "public" / "demo"
+        return {
+            "dispatch_image": ("d.jpg", (folder / f"{case}-dispatch.jpg").read_bytes(), "image/jpeg"),
+            "return_image": ("r.jpg", (folder / f"{case}-return.jpg").read_bytes(), "image/jpeg"),
+        }
+
+    def test_demo_lamp_replays_and_flows_to_refund(self) -> None:
+        self.sync()
+        response = self.client.post(
+            "/v1/cases/CASE-PP-D-27815/verify",
+            files=self.demo_files("case-pp-d-27815"),
+            data={"dispatch_sku": "LMP-CER-077", "return_sku": "LMP-CER-077"},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        case = response.json()
+        self.assertEqual(case["verification"]["risk"]["decision"], "approve")
+        self.assertIn("Ceramic table lamp", case["verification"]["replay"]["pair"])
+        self.assertTrue(case["has_report"])
+        draft = self.client.post("/v1/cases/CASE-PP-D-27815/resolution/draft").json()["draft"]
+        self.assertEqual(draft["proposed_action"], "refund_full")
+        done = self.execute("CASE-PP-D-27815", buyer_message=draft["buyer_message"])
+        self.assertEqual(done.status_code, 200, done.text)
+        self.assertEqual(done.json()["execution"]["amount"], "64.50")
+
+    def test_swapped_table_replays_as_review(self) -> None:
+        self.sync()
+        case = self.client.post(
+            "/v1/cases/CASE-PP-D-27826/verify",
+            files=self.demo_files("case-pp-d-27826"),
+            data={"dispatch_sku": "TBL-GRY-188", "return_sku": "TBL-GRY-188"},
+        ).json()
+        self.assertEqual(case["verification"]["risk"]["decision"], "review")
+
+    def test_unknown_photos_are_refused_not_invented(self) -> None:
+        self.sync()
+        response = self.client.post(
+            f"/v1/cases/{MATCH_CASE}/verify",
+            files={
+                "dispatch_image": ("d.png", png_bytes((20, 20, 30)), "image/png"),
+                "return_image": ("r.png", png_bytes((25, 22, 31)), "image/png"),
+            },
+            data={"dispatch_sku": "MSE-RGB-102", "return_sku": "MSE-RGB-102"},
+        )
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("Replay mode only knows the demo photo pairs", response.json()["detail"])
+
+    def test_swapped_order_does_not_match(self) -> None:
+        files = self.demo_files("case-pp-d-27815")
+        files["dispatch_image"], files["return_image"] = files["return_image"], files["dispatch_image"]
+        response = self.client.post("/v1/verify", files=files, data={"dispatch_sku": "X", "return_sku": "X"})
+        self.assertEqual(response.status_code, 422)
+
+    def test_health_reports_replay(self) -> None:
+        self.assertTrue(self.client.get("/health").json()["models"]["pipeline"].startswith("replay"))
 
 
 class AgentContractTests(unittest.TestCase):

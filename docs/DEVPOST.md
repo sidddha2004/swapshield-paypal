@@ -64,7 +64,7 @@ step it can take is sending the evidence to PayPal, which decides.
   audit trail.
 - **Sponsor tools:** a **Postman** collection (dispute walkthrough and safety
   checks, 29 passing assertions) and **Zapier** alerts.
-- **Quality:** 28 workflow tests and 46 ML tests, a threat model (webhook
+- **Quality:** 33 workflow tests and 46 ML tests, a threat model (webhook
   spoofing, replays, double refunds, prompt injection through the buyer's
   message), and a held-out benchmark.
 

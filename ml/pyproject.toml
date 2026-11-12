@@ -18,6 +18,16 @@ gpu = [
   "python-multipart>=0.0.20",
   "python-dotenv>=1.0"
 ]
+# Runs the full API without a GPU or PyTorch (SWAPSHIELD_PIPELINE=replay).
+replay = [
+  "pillow>=11",
+  "numpy>=2.1",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.34",
+  "python-multipart>=0.0.20",
+  "python-dotenv>=1.0",
+  "httpx>=0.27"
+]
 dev = ["pytest>=8.3", "ruff>=0.9"]
 train = ["numpy>=2.1", "scikit-learn>=1.6,<2"]
 
