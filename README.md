@@ -166,7 +166,7 @@ python -m uvicorn service.app:app --host 127.0.0.1 --port 8000
 npm run dev
 ```
 
-Open http://127.0.0.1:5173, choose **Disputes**, then **Sync from PayPal**. Three test
+Open http://127.0.0.1:5173, choose **Disputes**, then **Sync from PayPal**. Five test
 disputes appear, including one whose buyer message attempts a prompt injection.
 Upload a dispatch and a return photo, verify, draft and confirm. The first
 verification loads the models and takes about 3 minutes.
@@ -238,7 +238,7 @@ python -m unittest discover -s service/tests -t .
 | DINOv2-small | Frozen image encoder comparing dispatch and returned-item photos |
 | Qwen3-VL-4B, quantized | Frozen vision-language model extracting structured visual observations |
 | Logistic fusion model with Platt calibration | Trained for this project; combines the signals into a calibrated risk score |
-| OpenAI-compatible LLM (optional) | Evidence auditor and resolution agent; advisory and proposal-only, never calls PayPal. Provider used in the demo: **[fill in, or "not used"]** |
+| OpenAI-compatible LLM (optional) | Evidence auditor and resolution agent; advisory and proposal-only, never calls PayPal. Provider used in the demo: Anthropic Claude |
 | Claude Code and Codex | AI coding assistants used during development |
 
 The benchmark uses Amazon Berkeley Objects images (CC BY 4.0); setup and attribution in
@@ -248,7 +248,7 @@ The benchmark uses Amazon Berkeley Objects images (CC BY 4.0); setup and attribu
 
 - Recalibrate the photo-quality gate and evaluate on real merchant returns.
 - Use more of the Disputes API's evidence types, such as proof of fulfilment and tracking.
-- A hosted demo with recorded verifications, so anyone can try it without a GPU.
+- Pull dispatch and return weights from carrier and warehouse systems instead of typing them.
 
 ## Links
 

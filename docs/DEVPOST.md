@@ -55,8 +55,8 @@ step it can take is sending the evidence to PayPal, which decides.
   Orders v2 for the sandbox seed script. A standard-library REST client plus a
   mock client for offline demos and tests.
 - **AI:** DINOv2-small and Qwen3-VL-4B (4-bit) on a local RTX 5050; a trained,
-  calibrated logistic fusion model; an OpenAI-compatible LLM for the evidence
-  auditor and the resolution agent, each with a deterministic fallback.
+  calibrated logistic fusion model; Anthropic Claude for the evidence auditor and
+  the resolution agent, each with a deterministic fallback.
 - **Backend:** FastAPI, SQLite case store with an append-only action log,
   Pillow-rendered evidence PDF.
 - **Frontend:** Next.js (vinext) with Tailwind and shadcn/ui: a dispute desk with
@@ -119,13 +119,13 @@ sofas are the weakest category.
 - Recalibrate the photo-quality gate and retrain on real merchant returns.
 - Use the PayPal Disputes API's evidence types more fully (proof of fulfilment,
   tracking) and add shipment tracking at dispatch.
-- A hosted demo with recorded verifications, so anyone can try it without a GPU.
+- Pull dispatch and return weights from carrier and warehouse systems instead of typing them.
 
 ## Built with
 
 `paypal` `paypal-disputes-api` `paypal-payments-api` `python` `fastapi` `pytorch`
 `dinov2` `qwen3-vl` `transformers` `sqlite` `pillow` `typescript` `nextjs` `react`
-`tailwindcss` `shadcn-ui` `postman` `zapier`
+`tailwindcss` `shadcn-ui` `claude` `postman` `zapier`
 
 ## Links
 
@@ -133,7 +133,7 @@ sofas are the weakest category.
 - **Code:** https://github.com/sidddha2004/swapshield-paypal
 - **Demo video:** **[fill in]**
 - **Postman collection:** **[fill in: public workspace link]**
-- **Team:** **[fill in]**
+- **Team:** Siddharth (solo)
 
 ---
 
