@@ -27,18 +27,50 @@ rarely win.
 
 SwapShield turns a PayPal dispute into a reviewed, evidence-backed resolution.
 
+### Data flow
+
+```mermaid
+flowchart TB
+    Buyer["Buyer"]
+    PayPal["PayPal<br/>Disputes · Payments · Webhooks"]
+    Merchant["Merchant reviewer"]
+    Zapier["Zapier<br/>team alerts"]
+
+    subgraph SS["SwapShield (FastAPI service)"]
+        direction TB
+        P1(("1 · Ingest<br/>dispute"))
+        D1[("D1 · Case store<br/>SQLite")]
+        P2(("2 · Verify<br/>return"))
+        D4[("D4 · Models<br/>DINOv2 · Qwen3-VL<br/>fusion")]
+        D3[("D3 · Evidence<br/>PDF")]
+        P3(("3 · Draft<br/>resolution"))
+        P4(("4 · Execute<br/>on PayPal"))
+        D2[("D2 · Action log<br/>append-only")]
+        P5(("5 · Notify"))
+    end
+
+    Buyer -- "dispute +<br/>free-text message" --> PayPal
+    PayPal -- "signed webhook or sync:<br/>capture, amount, deadline" --> P1
+    P1 -- "case" --> D1
+    D1 -- "case context" --> P2
+    Merchant -- "dispatch + return photos,<br/>SKU, weights" --> P2
+    D4 -- "embeddings, observations,<br/>calibrated score" --> P2
+    P2 -- "side-by-side report" --> D3
+    P2 -- "verification, risk score" --> P3
+    P3 -- "proposal only" --> Merchant
+    Merchant -- "confirm + name" --> P4
+    D3 -- "PDF" --> P4
+    P4 -- "one idempotent call:<br/>refund, evidence or message" --> PayPal
+    PayPal -- "final decision" --> Buyer
+    P4 -- "who, what,<br/>PayPal response" --> D2
+    P1 & P2 & P3 & P4 -.-> P5
+    P5 -- "item, amount,<br/>hours left, result" --> Zapier
 ```
-PayPal dispute ──webhook / sync──▶ case: capture, amount, deadline, buyer message
-        │
-        ▼
-Dispatch + returned-item photos ──▶ DINOv2 + Qwen3-VL + calibrated fusion + evidence auditor
-        │
-        ▼
-Resolution agent ──▶ proposal: refund · partial refund · evidence to PayPal · ask for photos
-        │                  schema-checked, capped, cannot call PayPal
-        ▼
-Named reviewer confirms ──▶ one idempotent PayPal call ──▶ append-only audit log ──▶ Zapier alert
-```
+
+Rectangles are people and outside services, circles are SwapShield's steps, cylinders
+are what it stores, dotted lines are alert events. Only step 4 can reach PayPal's money APIs, and only after a named
+reviewer confirms; the hard rules (allowed action, refund cap, no accusations) are
+checked when the agent drafts and again at step 4.
 
 1. **Dispute in.** A signature-verified `CUSTOMER.DISPUTE.CREATED` webhook, or a sync,
    creates a case from the PayPal Disputes and Payments APIs. The queue is sorted by
