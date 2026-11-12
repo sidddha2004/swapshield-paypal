@@ -1,0 +1,695 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SwapShield Local Verifier",
+    "description": "Defense-only return evidence comparison linked to PayPal disputes. Money moves only on explicit, named reviewer confirmation; nothing is auto-rejected and PayPal adjudicates contested cases.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Root  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/verify": {
+      "post": {
+        "summary": "Verify Return",
+        "operationId": "verify_return_v1_verify_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_verify_return_v1_verify_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Verify Return V1 Verify Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/paypal/webhook": {
+      "post": {
+        "summary": "Paypal Webhook",
+        "operationId": "paypal_webhook_v1_paypal_webhook_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Paypal Webhook V1 Paypal Webhook Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/paypal/sync": {
+      "post": {
+        "summary": "Paypal Sync",
+        "operationId": "paypal_sync_v1_paypal_sync_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Paypal Sync V1 Paypal Sync Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases": {
+      "get": {
+        "summary": "List Cases",
+        "operationId": "list_cases_v1_cases_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response List Cases V1 Cases Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}": {
+      "get": {
+        "summary": "Get Case",
+        "operationId": "get_case_v1_cases__case_id__get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Case V1 Cases  Case Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/report.pdf": {
+      "get": {
+        "summary": "Get Case Report",
+        "operationId": "get_case_report_v1_cases__case_id__report_pdf_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/verify": {
+      "post": {
+        "summary": "Verify Case",
+        "operationId": "verify_case_v1_cases__case_id__verify_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_verify_case_v1_cases__case_id__verify_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Verify Case V1 Cases  Case Id  Verify Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/resolution/draft": {
+      "post": {
+        "summary": "Draft Resolution",
+        "operationId": "draft_resolution_v1_cases__case_id__resolution_draft_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Draft Resolution V1 Cases  Case Id  Resolution Draft Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/resolution/execute": {
+      "post": {
+        "summary": "Execute Resolution",
+        "operationId": "execute_resolution_v1_cases__case_id__resolution_execute_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Execute Resolution V1 Cases  Case Id  Resolution Execute Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/deadlines": {
+      "post": {
+        "summary": "Deadline Alerts",
+        "description": "Send one alert per open case as it enters each deadline bucket (48 h, 24 h, 6 h).\n\nCall it on a schedule (Zapier Schedule, cron). Repeated calls do not repeat\nan alert: each case alerts once per bucket, recorded in its action log.",
+        "operationId": "deadline_alerts_v1_alerts_deadlines_post",
+        "parameters": [
+          {
+            "name": "within_hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 48,
+              "title": "Within Hours"
+            }
+          },
+          {
+            "name": "dry_run",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Dry Run"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Deadline Alerts V1 Alerts Deadlines Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_verify_case_v1_cases__case_id__verify_post": {
+        "properties": {
+          "dispatch_image": {
+            "type": "string",
+            "format": "binary",
+            "title": "Dispatch Image"
+          },
+          "return_image": {
+            "type": "string",
+            "format": "binary",
+            "title": "Return Image"
+          },
+          "dispatch_sku": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Dispatch Sku"
+          },
+          "return_sku": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Return Sku"
+          },
+          "dispatch_serial": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispatch Serial"
+          },
+          "return_serial": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Serial"
+          },
+          "dispatch_weight_grams": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispatch Weight Grams"
+          },
+          "return_weight_grams": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Weight Grams"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dispatch_image",
+          "return_image",
+          "dispatch_sku",
+          "return_sku"
+        ],
+        "title": "Body_verify_case_v1_cases__case_id__verify_post"
+      },
+      "Body_verify_return_v1_verify_post": {
+        "properties": {
+          "dispatch_image": {
+            "type": "string",
+            "format": "binary",
+            "title": "Dispatch Image"
+          },
+          "return_image": {
+            "type": "string",
+            "format": "binary",
+            "title": "Return Image"
+          },
+          "dispatch_sku": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Dispatch Sku"
+          },
+          "return_sku": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Return Sku"
+          },
+          "dispatch_serial": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispatch Serial"
+          },
+          "return_serial": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Serial"
+          },
+          "dispatch_weight_grams": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispatch Weight Grams"
+          },
+          "return_weight_grams": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Weight Grams"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dispatch_image",
+          "return_image",
+          "dispatch_sku",
+          "return_sku"
+        ],
+        "title": "Body_verify_return_v1_verify_post"
+      },
+      "ExecuteRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "refund_full",
+              "refund_partial",
+              "submit_evidence",
+              "request_photos"
+            ],
+            "title": "Action"
+          },
+          "reviewer_name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "Reviewer Name"
+          },
+          "confirm": {
+            "type": "boolean",
+            "title": "Confirm"
+          },
+          "refund_amount": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refund Amount"
+          },
+          "buyer_message": {
+            "type": "string",
+            "maxLength": 1200,
+            "title": "Buyer Message",
+            "default": ""
+          },
+          "evidence_notes": {
+            "type": "string",
+            "maxLength": 1200,
+            "title": "Evidence Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "reviewer_name",
+          "confirm"
+        ],
+        "title": "ExecuteRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

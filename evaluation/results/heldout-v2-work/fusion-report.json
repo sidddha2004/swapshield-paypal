@@ -1,0 +1,118 @@
+{
+  "cost_assumptions": {
+    "false_negative_inr": 6200,
+    "false_positive_inr": 80
+  },
+  "protocol": "item-disjoint-v1",
+  "test": {
+    "average_precision": 0.9764674440643981,
+    "bootstrap_95_ci": {
+      "f1": [
+        0.8267716535433071,
+        0.9138634696320321
+      ],
+      "precision": [
+        0.9583156779661017,
+        1.0
+      ],
+      "recall": [
+        0.7179276315789473,
+        0.8516129032258064
+      ]
+    },
+    "calibration_error": 0.03170972960708035,
+    "cases": 304,
+    "confusion": {
+      "fn": 32,
+      "fp": 2,
+      "tn": 150,
+      "tp": 120
+    },
+    "f1": 0.8759124087591241,
+    "false_positive_cost": 160,
+    "genuine_recapture_rate": 0.5197368421052632,
+    "latency_ms": {
+      "p50": 9638.011,
+      "p95": 17822.2391
+    },
+    "missed_substitution_loss": 198400,
+    "positive_rate": 0.5,
+    "precision": 0.9836065573770492,
+    "recall": 0.7894736842105263,
+    "recapture_rate": 0.5328947368421053,
+    "slices": {
+      "category:chair": {
+        "cases": 76,
+        "confusion": {
+          "fn": 6,
+          "fp": 0,
+          "tn": 38,
+          "tp": 32
+        },
+        "f1": 0.9142857142857143,
+        "positive_rate": 0.5,
+        "precision": 1.0,
+        "recall": 0.8421052631578947
+      },
+      "category:lamp": {
+        "cases": 76,
+        "confusion": {
+          "fn": 6,
+          "fp": 0,
+          "tn": 38,
+          "tp": 32
+        },
+        "f1": 0.9142857142857143,
+        "positive_rate": 0.5,
+        "precision": 1.0,
+        "recall": 0.8421052631578947
+      },
+      "category:sofa": {
+        "cases": 76,
+        "confusion": {
+          "fn": 13,
+          "fp": 0,
+          "tn": 38,
+          "tp": 25
+        },
+        "f1": 0.7936507936507937,
+        "positive_rate": 0.5,
+        "precision": 1.0,
+        "recall": 0.6578947368421053
+      },
+      "category:table": {
+        "cases": 76,
+        "confusion": {
+          "fn": 7,
+          "fp": 2,
+          "tn": 36,
+          "tp": 31
+        },
+        "f1": 0.8732394366197183,
+        "positive_rate": 0.5,
+        "precision": 0.9393939393939394,
+        "recall": 0.8157894736842105
+      },
+      "slice:abo-360": {
+        "cases": 304,
+        "confusion": {
+          "fn": 32,
+          "fp": 2,
+          "tn": 150,
+          "tp": 120
+        },
+        "f1": 0.8759124087591241,
+        "positive_rate": 0.5,
+        "precision": 0.9836065573770492,
+        "recall": 0.7894736842105263
+      }
+    }
+  },
+  "threshold_selection": {
+    "expected_cost": 0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "split": "validation",
+    "threshold": 0.92
+  }
+}

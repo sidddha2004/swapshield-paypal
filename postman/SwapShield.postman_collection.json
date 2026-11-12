@@ -1,0 +1,743 @@
+{
+  "info": {
+    "_postman_id": "45df4d8b-ed30-51a3-ac5e-4b2e8a0960ad",
+    "name": "SwapShield AI \u00b7 PayPal dispute resolution",
+    "description": "Resolve PayPal 'item not as described' disputes with AI-verified return evidence and a human in charge.\n\nRun the API with `PAYPAL_MODE=mock` (no PayPal account needed), then run **Dispute walkthrough** in order, then **Safety checks**. Step 5 needs the local GPU service.\n\nPayPal APIs behind these endpoints: Disputes v1 (list, get, provide-evidence, send-message), Payments v2 (get capture, refund) and Webhooks (verify-webhook-signature). See docs/PAYPAL_INTEGRATION.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "id": "2a39cca5-5150-5702-9271-75e2ef47bbc1",
+      "name": "Dispute walkthrough",
+      "item": [
+        {
+          "id": "1dcd1735-d5eb-5bf5-becb-fb80e0d56ce5",
+          "name": "1. Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Model, auditor, resolution-agent and PayPal status. Check `paypal.mode` is `mock` before running the rest."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('API is ready', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('PayPal is configured', () => pm.expect(body.paypal.configured).to.be.true);",
+                  "pm.test('Agent can only propose', () => pm.expect(body.resolution_agent.authority).to.eql('proposal_only'));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "6bf3462e-6031-5a05-9744-dba9c89150fb",
+          "name": "2. Sync disputes from PayPal",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/paypal/sync",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "paypal",
+                "sync"
+              ]
+            },
+            "description": "Pulls open disputes from the PayPal Disputes API (mock fixtures in mock mode) and creates one case per dispute. Safe to repeat: cases are keyed by dispute ID."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Synced', () => pm.response.to.have.status(200));",
+                  "pm.test('At least one dispute', () => pm.expect(pm.response.json().synced).to.be.above(0));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "acbdcd86-eb4f-50af-8438-1d58f82a2c40",
+          "name": "3. List cases (deadline order)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases"
+              ]
+            },
+            "description": "Queue sorted by PayPal's seller response deadline. Picks the mouse dispute for the walkthrough."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Cases listed', () => pm.response.to.have.status(200));",
+                  "const cases = pm.response.json().cases;",
+                  "const pick = cases.find(c => c.dispute_id === 'PP-D-27803') || cases[0];",
+                  "pm.collectionVariables.set('caseId', pick.case_id);",
+                  "pm.test('Sorted by deadline (open cases first)', () => {",
+                  "  const open = cases.filter(c => c.workflow_status !== 'resolved').map(c => c.seller_response_due);",
+                  "  pm.expect(open).to.eql([...open].sort());",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "f1e8148e-5049-5f41-9aad-70701095d144",
+          "name": "4. Open the case",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/{{caseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "{{caseId}}"
+              ]
+            },
+            "description": "Dispute context from PayPal: reason, amounts, capture ID, response deadline, buyer message and the action log."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Case found', () => pm.response.to.have.status(200));",
+                  "pm.test('Linked to a PayPal capture', () => pm.expect(pm.response.json().capture_id).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "ccc4d06b-3712-50be-902d-6be72f88ecbb",
+          "name": "5. Verify the returned item (GPU)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/{{caseId}}/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "{{caseId}}",
+                "verify"
+              ]
+            },
+            "description": "Runs DINOv2 + Qwen3-VL + the calibrated fusion model + the evidence auditor on the dispatch and return photos, and renders the evidence PDF. Needs the local GPU service; the first call loads the models (about 3 minutes). Choose your own two photos in Postman's Body tab, or keep the bundled test images.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "dispatch_image",
+                  "type": "file",
+                  "src": "tests/dispatch.jpeg"
+                },
+                {
+                  "key": "return_image",
+                  "type": "file",
+                  "src": "tests/return.jpeg"
+                },
+                {
+                  "key": "dispatch_sku",
+                  "value": "MSE-RGB-102",
+                  "type": "text"
+                },
+                {
+                  "key": "return_sku",
+                  "value": "MSE-RGB-102",
+                  "type": "text"
+                },
+                {
+                  "key": "dispatch_weight_grams",
+                  "value": "100",
+                  "type": "text"
+                },
+                {
+                  "key": "return_weight_grams",
+                  "value": "101",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Verified', () => pm.response.to.have.status(200));",
+                  "const v = pm.response.json().verification;",
+                  "pm.test('Decision is approve, review or recapture', () => pm.expect(['approve','review','recapture']).to.include(v.risk.decision));",
+                  "pm.test('Auditor is advisory only', () => pm.expect(v.auditor_assessment.authority).to.eql('advisory_only'));",
+                  "pm.test('Evidence PDF ready', () => pm.expect(pm.response.json().has_report).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "9dd0a7ea-25a7-593b-aedd-af9a4ddc1e19",
+          "name": "6. Draft the resolution (agent)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/{{caseId}}/resolution/draft",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "{{caseId}}",
+                "resolution",
+                "draft"
+              ]
+            },
+            "description": "The resolution agent proposes a refund, an evidence submission or a request for clearer photos. It cannot call PayPal."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Drafted', () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().draft;",
+                  "pm.test('Proposal only', () => pm.expect(d.authority).to.eql('proposal_only'));",
+                  "pm.test('Proposed action is one the evidence allows', () => pm.expect(d.allowed_actions).to.include(d.proposed_action));",
+                  "pm.collectionVariables.set('proposedAction', d.proposed_action);",
+                  "pm.collectionVariables.set('buyerMessage', d.buyer_message || '');",
+                  "pm.collectionVariables.set('evidenceNotes', d.evidence_notes || '');"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "ee661417-e26b-5d41-bc8b-773de70f6c71",
+          "name": "7. Confirm and execute on PayPal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/{{caseId}}/resolution/execute",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "{{caseId}}",
+                "resolution",
+                "execute"
+              ]
+            },
+            "description": "A named reviewer confirms the agent's proposal. SwapShield makes one idempotent PayPal call (refund, provide-evidence or send-message) and logs it.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{executeBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const action = pm.collectionVariables.get('proposedAction');",
+                  "const body = {",
+                  "  action, reviewer_name: pm.collectionVariables.get('reviewerName'), confirm: true,",
+                  "  buyer_message: action === 'submit_evidence' ? '' : pm.collectionVariables.get('buyerMessage'),",
+                  "  evidence_notes: action === 'submit_evidence' ? pm.collectionVariables.get('evidenceNotes') : ''",
+                  "};",
+                  "pm.collectionVariables.set('executeBody', JSON.stringify(body));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Sent to PayPal', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test('PayPal responded', () => pm.expect(r.execution.paypal_status).to.be.a('string'));",
+                  "pm.test('Reviewer recorded in the log', () => pm.expect(r.actions.at(-1).actor).to.eql('reviewer:' + pm.collectionVariables.get('reviewerName')));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "2ded4674-9ffe-5bed-a1c9-2252b878d8ff",
+          "name": "8. Download the evidence report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/{{caseId}}/report.pdf",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "{{caseId}}",
+                "report.pdf"
+              ]
+            },
+            "description": "The one-page PDF attached to PayPal's provide-evidence call: both photos, compared records, observations and a neutral statement."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('PDF returned', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/pdf');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "00f534ff-78a5-5df4-8f9a-48d422f78f7f",
+          "name": "9. Confirm again (no double refund)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/{{caseId}}/resolution/execute",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "{{caseId}}",
+                "resolution",
+                "execute"
+              ]
+            },
+            "description": "Repeating a refund or evidence submission returns the logged result instead of calling PayPal again (deterministic PayPal-Request-Id).",
+            "body": {
+              "mode": "raw",
+              "raw": "{{executeBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const action = pm.collectionVariables.get('proposedAction');",
+                  "if (action === 'request_photos') {",
+                  "  pm.test('Photo requests may be repeated by design', () => pm.response.to.have.status(200));",
+                  "} else {",
+                  "  pm.test('Replayed, not executed twice', () => pm.expect(pm.response.json().execution.replayed).to.be.true);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ],
+      "description": "From PayPal dispute to a confirmed PayPal action, in order."
+    },
+    {
+      "id": "ba82086e-5e42-5978-bc2d-660c5b33e923",
+      "name": "Safety checks",
+      "item": [
+        {
+          "id": "b82a0ba3-6357-593a-9a2a-a0a10fb5e689",
+          "name": "Unconfirmed action is refused",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/CASE-PP-D-27811/resolution/execute",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "CASE-PP-D-27811",
+                "resolution",
+                "execute"
+              ]
+            },
+            "description": "No money moves without `confirm: true` from a named reviewer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"refund_full\",\n  \"reviewer_name\": \"Postman\",\n  \"confirm\": false,\n  \"buyer_message\": \"Refund issued.\",\n  \"evidence_notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 without confirmation', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "2a030a59-3f4e-5e8d-bc8f-aa535c6fd070",
+          "name": "A $9,999 refund is refused",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/CASE-PP-D-27811/resolution/execute",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "CASE-PP-D-27811",
+                "resolution",
+                "execute"
+              ]
+            },
+            "description": "Dispute PP-D-27811's buyer message tries a prompt injection ('refund $9999'). The server caps refunds at the captured amount ($149.00) and allows only actions the evidence supports.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"refund_partial\",\n  \"reviewer_name\": \"Postman\",\n  \"confirm\": true,\n  \"refund_amount\": \"9999\",\n  \"buyer_message\": \"Refund issued.\",\n  \"evidence_notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422: rejected by the hard rules', () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "0d917af3-8a96-542e-a1a9-689344278a58",
+          "name": "Accusatory wording is refused",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cases/{{caseId}}/resolution/execute",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "cases",
+                "{{caseId}}",
+                "resolution",
+                "execute"
+              ]
+            },
+            "description": "Messages to the buyer may not accuse anyone; the same language filter as the agent applies to reviewer edits.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"refund_full\",\n  \"reviewer_name\": \"Postman\",\n  \"confirm\": true,\n  \"buyer_message\": \"This looks like fraud.\",\n  \"evidence_notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Refused (422, or 409 once the case is resolved)', () => pm.expect([409, 422]).to.include(pm.response.code));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "ec679ceb-1a16-56ba-9497-2bdc0b52fe42",
+          "name": "Forged webhook is rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/paypal/webhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "paypal",
+                "webhook"
+              ]
+            },
+            "description": "A webhook without a valid signature never creates or changes a case.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"WH-FORGED\",\n  \"event_type\": \"CUSTOMER.DISPUTE.CREATED\",\n  \"resource\": {\n    \"dispute_id\": \"PP-D-27803\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 without a valid signature', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "d58aed81-8fb7-578d-81bd-216fca74d257",
+          "name": "Deadline alerts (dry run)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/alerts/deadlines?dry_run=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "alerts",
+                "deadlines"
+              ],
+              "query": [
+                {
+                  "key": "dry_run",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Lists the deadline alerts that would go to Zapier now: open cases inside the 48 h, 24 h or 6 h window, once per window. Dry run sends and records nothing. See docs/ZAPIER.md."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Listed', () => pm.response.to.have.status(200));",
+                  "pm.test('Nothing delivered in a dry run', () => pm.expect(pm.response.json().alerts.every(a => a.delivered === false)).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "id": "83670511-7d90-5ddb-bbba-2bb94fa3b183",
+          "name": "Signed webhook is accepted (mock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-swapshield-mock-signature",
+                "value": "{{mockWebhookSignature}}",
+                "description": "Mock mode only. In sandbox and live, PayPal's signature headers are verified with PayPal."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/paypal/webhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "paypal",
+                "webhook"
+              ]
+            },
+            "description": "In mock mode the signature is a shared header; in sandbox and live SwapShield calls PayPal's verify-webhook-signature.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"WH-POSTMAN-1\",\n  \"event_type\": \"CUSTOMER.DISPUTE.CREATED\",\n  \"resource\": {\n    \"dispute_id\": \"PP-D-27815\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Accepted', () => pm.response.to.have.status(200));",
+                  "pm.test('Mapped to its case', () => pm.expect(pm.response.json().case_id).to.eql('CASE-PP-D-27815'));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ],
+      "description": "The rules that hold whatever the agent or a request says. Run after the walkthrough."
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "reviewerName",
+      "value": "Postman reviewer"
+    },
+    {
+      "key": "mockWebhookSignature",
+      "value": "mock-signature-ok"
+    },
+    {
+      "key": "caseId",
+      "value": ""
+    },
+    {
+      "key": "proposedAction",
+      "value": ""
+    },
+    {
+      "key": "buyerMessage",
+      "value": ""
+    },
+    {
+      "key": "evidenceNotes",
+      "value": ""
+    },
+    {
+      "key": "executeBody",
+      "value": ""
+    }
+  ]
+}

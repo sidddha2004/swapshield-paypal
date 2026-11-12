@@ -1,0 +1,141 @@
+{
+  "rule": "lowest validation-v2 expected cost (FP 80, FN 6200); ties: higher F1, then simpler",
+  "validation_cases": 304,
+  "test_cases": 304,
+  "candidates": {
+    "fusion": {
+      "label": "Trained fusion",
+      "validation_threshold": 0.03,
+      "validation_cost": 4800.0,
+      "validation_confusion": {
+        "tp": 152,
+        "fp": 60,
+        "tn": 92,
+        "fn": 0
+      },
+      "validation_f1": 0.8351648351648352
+    },
+    "vlm": {
+      "label": "Qwen3-VL mismatch only",
+      "validation_threshold": 0.05,
+      "validation_cost": 8480.0,
+      "validation_confusion": {
+        "tp": 152,
+        "fp": 106,
+        "tn": 46,
+        "fn": 0
+      },
+      "validation_f1": 0.7414634146341463
+    },
+    "dinov2": {
+      "label": "DINOv2 similarity only",
+      "validation_threshold": 0.13,
+      "validation_cost": 9040.0,
+      "validation_confusion": {
+        "tp": 152,
+        "fp": 113,
+        "tn": 39,
+        "fn": 0
+      },
+      "validation_f1": 0.7290167865707434
+    }
+  },
+  "chosen": "fusion",
+  "chosen_threshold": 0.03,
+  "test": {
+    "precision": 0.7268292682926829,
+    "recall": 0.9802631578947368,
+    "f1": 0.834733893557423,
+    "average_precision": 0.9764674440643981,
+    "confusion": {
+      "tp": 149,
+      "fp": 56,
+      "tn": 96,
+      "fn": 3
+    },
+    "bootstrap_95_ci": {
+      "precision": [
+        0.6601893203883495,
+        0.7941211652124964
+      ],
+      "recall": [
+        0.9554140127388535,
+        1.0
+      ],
+      "f1": [
+        0.7901217515858401,
+        0.8786369276397421
+      ]
+    },
+    "recapture_rate": 0.5328947368421053,
+    "genuine_recapture_rate": 0.5197368421052632,
+    "slices": {
+      "category:chair": {
+        "cases": 76,
+        "positive_rate": 0.5,
+        "precision": 0.74,
+        "recall": 0.9736842105263158,
+        "f1": 0.8409090909090909,
+        "confusion": {
+          "tp": 37,
+          "fp": 13,
+          "tn": 25,
+          "fn": 1
+        }
+      },
+      "category:lamp": {
+        "cases": 76,
+        "positive_rate": 0.5,
+        "precision": 0.9743589743589743,
+        "recall": 1.0,
+        "f1": 0.9870129870129869,
+        "confusion": {
+          "tp": 38,
+          "fp": 1,
+          "tn": 37,
+          "fn": 0
+        }
+      },
+      "category:sofa": {
+        "cases": 76,
+        "positive_rate": 0.5,
+        "precision": 0.5625,
+        "recall": 0.9473684210526315,
+        "f1": 0.7058823529411765,
+        "confusion": {
+          "tp": 36,
+          "fp": 28,
+          "tn": 10,
+          "fn": 2
+        }
+      },
+      "category:table": {
+        "cases": 76,
+        "positive_rate": 0.5,
+        "precision": 0.7307692307692307,
+        "recall": 1.0,
+        "f1": 0.8444444444444443,
+        "confusion": {
+          "tp": 38,
+          "fp": 14,
+          "tn": 24,
+          "fn": 0
+        }
+      },
+      "slice:abo-360": {
+        "cases": 304,
+        "positive_rate": 0.5,
+        "precision": 0.7268292682926829,
+        "recall": 0.9802631578947368,
+        "f1": 0.834733893557423,
+        "confusion": {
+          "tp": 149,
+          "fp": 56,
+          "tn": 96,
+          "fn": 3
+        }
+      }
+    }
+  },
+  "disclosure": "The v2 test results for all three methods were seen before this selection ran."
+}

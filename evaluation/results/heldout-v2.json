@@ -1,0 +1,311 @@
+{
+  "protocol": "item-disjoint held-out v2: thresholds chosen on v1 validation, test opened once",
+  "test_cases": 304,
+  "test_genuine": 152,
+  "test_substitution": 152,
+  "methods": {
+    "fusion": {
+      "label": "Trained fusion (v1 threshold)",
+      "threshold": 0.92,
+      "precision": 0.9836065573770492,
+      "recall": 0.7894736842105263,
+      "f1": 0.8759124087591241,
+      "average_precision": 0.9764674440643981,
+      "confusion": {
+        "fn": 32,
+        "fp": 2,
+        "tn": 150,
+        "tp": 120
+      },
+      "recapture_rate": 0.5328947368421053,
+      "genuine_recapture_rate": 0.5197368421052632,
+      "intervals": {
+        "f1": [
+          0.8267716535433071,
+          0.9138634696320321
+        ],
+        "precision": [
+          0.9583156779661017,
+          1.0
+        ],
+        "recall": [
+          0.7179276315789473,
+          0.8516129032258064
+        ]
+      },
+      "slices": {
+        "category:chair": {
+          "cases": 76,
+          "confusion": {
+            "fn": 6,
+            "fp": 0,
+            "tn": 38,
+            "tp": 32
+          },
+          "f1": 0.9142857142857143,
+          "positive_rate": 0.5,
+          "precision": 1.0,
+          "recall": 0.8421052631578947
+        },
+        "category:lamp": {
+          "cases": 76,
+          "confusion": {
+            "fn": 6,
+            "fp": 0,
+            "tn": 38,
+            "tp": 32
+          },
+          "f1": 0.9142857142857143,
+          "positive_rate": 0.5,
+          "precision": 1.0,
+          "recall": 0.8421052631578947
+        },
+        "category:sofa": {
+          "cases": 76,
+          "confusion": {
+            "fn": 13,
+            "fp": 0,
+            "tn": 38,
+            "tp": 25
+          },
+          "f1": 0.7936507936507937,
+          "positive_rate": 0.5,
+          "precision": 1.0,
+          "recall": 0.6578947368421053
+        },
+        "category:table": {
+          "cases": 76,
+          "confusion": {
+            "fn": 7,
+            "fp": 2,
+            "tn": 36,
+            "tp": 31
+          },
+          "f1": 0.8732394366197183,
+          "positive_rate": 0.5,
+          "precision": 0.9393939393939394,
+          "recall": 0.8157894736842105
+        },
+        "slice:abo-360": {
+          "cases": 304,
+          "confusion": {
+            "fn": 32,
+            "fp": 2,
+            "tn": 150,
+            "tp": 120
+          },
+          "f1": 0.8759124087591241,
+          "positive_rate": 0.5,
+          "precision": 0.9836065573770492,
+          "recall": 0.7894736842105263
+        }
+      },
+      "latency_ms": {
+        "p50": 9638.011,
+        "p95": 17822.2391
+      }
+    },
+    "dinov2": {
+      "label": "DINOv2 similarity only",
+      "threshold": 0.4,
+      "precision": 0.8175182481751825,
+      "recall": 0.7368421052631579,
+      "f1": 0.7750865051903114,
+      "average_precision": 0.8856331948617909,
+      "confusion": {
+        "fn": 40,
+        "fp": 25,
+        "tn": 127,
+        "tp": 112
+      },
+      "recapture_rate": 0.5328947368421053,
+      "genuine_recapture_rate": 0.5197368421052632,
+      "intervals": {
+        "f1": [
+          0.7185185185185186,
+          0.8289881422924901
+        ],
+        "precision": [
+          0.7464763216983058,
+          0.8827599676724138
+        ],
+        "recall": [
+          0.6642897727272727,
+          0.8086873638344226
+        ]
+      },
+      "slices": {
+        "category:chair": {
+          "cases": 76,
+          "confusion": {
+            "fn": 7,
+            "fp": 2,
+            "tn": 36,
+            "tp": 31
+          },
+          "f1": 0.8732394366197183,
+          "positive_rate": 0.5,
+          "precision": 0.9393939393939394,
+          "recall": 0.8157894736842105
+        },
+        "category:lamp": {
+          "cases": 76,
+          "confusion": {
+            "fn": 8,
+            "fp": 0,
+            "tn": 38,
+            "tp": 30
+          },
+          "f1": 0.8823529411764706,
+          "positive_rate": 0.5,
+          "precision": 1.0,
+          "recall": 0.7894736842105263
+        },
+        "category:sofa": {
+          "cases": 76,
+          "confusion": {
+            "fn": 13,
+            "fp": 15,
+            "tn": 23,
+            "tp": 25
+          },
+          "f1": 0.6410256410256411,
+          "positive_rate": 0.5,
+          "precision": 0.625,
+          "recall": 0.6578947368421053
+        },
+        "category:table": {
+          "cases": 76,
+          "confusion": {
+            "fn": 12,
+            "fp": 8,
+            "tn": 30,
+            "tp": 26
+          },
+          "f1": 0.7222222222222222,
+          "positive_rate": 0.5,
+          "precision": 0.7647058823529411,
+          "recall": 0.6842105263157895
+        },
+        "slice:abo-360": {
+          "cases": 304,
+          "confusion": {
+            "fn": 40,
+            "fp": 25,
+            "tn": 127,
+            "tp": 112
+          },
+          "f1": 0.7750865051903114,
+          "positive_rate": 0.5,
+          "precision": 0.8175182481751825,
+          "recall": 0.7368421052631579
+        }
+      },
+      "latency_ms": {
+        "p50": 9638.011,
+        "p95": 17822.2391
+      }
+    },
+    "vlm": {
+      "label": "Qwen3-VL mismatch only",
+      "threshold": 0.9,
+      "precision": 0.9857142857142858,
+      "recall": 0.9078947368421053,
+      "f1": 0.9452054794520548,
+      "average_precision": 0.9820537797166101,
+      "confusion": {
+        "fn": 14,
+        "fp": 2,
+        "tn": 150,
+        "tp": 138
+      },
+      "recapture_rate": 0.5328947368421053,
+      "genuine_recapture_rate": 0.5197368421052632,
+      "intervals": {
+        "f1": [
+          0.9172775689223057,
+          0.970873786407767
+        ],
+        "precision": [
+          0.9632352941176471,
+          1.0
+        ],
+        "recall": [
+          0.8633093525179856,
+          0.9523809523809523
+        ]
+      },
+      "slices": {
+        "category:chair": {
+          "cases": 76,
+          "confusion": {
+            "fn": 3,
+            "fp": 0,
+            "tn": 38,
+            "tp": 35
+          },
+          "f1": 0.958904109589041,
+          "positive_rate": 0.5,
+          "precision": 1.0,
+          "recall": 0.9210526315789473
+        },
+        "category:lamp": {
+          "cases": 76,
+          "confusion": {
+            "fn": 0,
+            "fp": 0,
+            "tn": 38,
+            "tp": 38
+          },
+          "f1": 1.0,
+          "positive_rate": 0.5,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "category:sofa": {
+          "cases": 76,
+          "confusion": {
+            "fn": 8,
+            "fp": 0,
+            "tn": 38,
+            "tp": 30
+          },
+          "f1": 0.8823529411764706,
+          "positive_rate": 0.5,
+          "precision": 1.0,
+          "recall": 0.7894736842105263
+        },
+        "category:table": {
+          "cases": 76,
+          "confusion": {
+            "fn": 3,
+            "fp": 2,
+            "tn": 36,
+            "tp": 35
+          },
+          "f1": 0.9333333333333332,
+          "positive_rate": 0.5,
+          "precision": 0.9459459459459459,
+          "recall": 0.9210526315789473
+        },
+        "slice:abo-360": {
+          "cases": 304,
+          "confusion": {
+            "fn": 14,
+            "fp": 2,
+            "tn": 150,
+            "tp": 138
+          },
+          "f1": 0.9452054794520548,
+          "positive_rate": 0.5,
+          "precision": 0.9857142857142858,
+          "recall": 0.9078947368421053
+        }
+      },
+      "latency_ms": {
+        "p50": 9638.011,
+        "p95": 17822.2391
+      }
+    }
+  }
+}

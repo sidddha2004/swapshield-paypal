@@ -1,0 +1,184 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../vendor/shadcn-tailwind-4.13.0.css";
+
+@utility scrollbar-thin { scrollbar-width: thin; }
+@utility scrollbar-none { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
+@utility scrollbar-gutter-stable { scrollbar-gutter: stable; }
+
+:root {
+  /* framed-sheet style (taste-skill app sheet, seed 773245216); frame tinted green-grey from the SwapShield mark */
+  --frame: #f3f6f4;
+  --sheet: #ffffff;
+  --raised: #f4f6f5;
+  --active: #e9eeeb;
+  --hairline: #e8eaec;
+  --rule: #f0f1f2;
+  --control: #cdced1;
+  --ink: #131416;
+  --ink-muted: #5d5f60;
+  --brand: #1b6c80;
+  --positive: #1e7b4f;
+  --negative: #c4242a;
+  --warning: #92400e;
+  --pill-positive-bg: #dcfae5; --pill-positive-ink: #04250e;
+  --pill-negative-bg: #ffedea; --pill-negative-ink: #831c1e;
+  --pill-warning-bg: #fffbeb; --pill-warning-ink: #92400e; --pill-warning-edge: #fde68a;
+  --pill-neutral-bg: #ebedee; --pill-neutral-ink: #353736;
+  --pill-brand-bg: #e3f1f4; --pill-brand-ink: #0d4351;
+
+  --background: var(--sheet);
+  --foreground: var(--ink);
+  --card: var(--sheet);
+  --card-foreground: var(--ink);
+  --popover: var(--sheet);
+  --popover-foreground: var(--ink);
+  --primary: #1d1f20;
+  --primary-foreground: #ffffff;
+  --secondary: var(--active);
+  --secondary-foreground: var(--ink);
+  --muted: var(--raised);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--active);
+  --accent-foreground: var(--ink);
+  --destructive: var(--negative);
+  --border: var(--hairline);
+  --input: var(--control);
+  --ring: var(--brand);
+  --chart-1: #1b6c80;
+  --chart-2: #2f70bb;
+  --chart-3: #a86f0c;
+  --chart-4: #5d5f60;
+  --chart-5: #c4242a;
+  --radius: 0.5rem;
+  --sidebar: var(--frame);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--active);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--hairline);
+  --sidebar-ring: var(--brand);
+}
+
+@theme inline {
+  --color-background: var(--background); --color-foreground: var(--foreground);
+  --color-card: var(--card); --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover); --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive); --color-border: var(--border);
+  --color-input: var(--input); --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1); --color-chart-2: var(--chart-2); --color-chart-3: var(--chart-3); --color-chart-4: var(--chart-4); --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar); --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary); --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent); --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border); --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px); --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius); --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "IBM Plex Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+* { border-color: var(--border); }
+body {
+  margin: 0;
+  background: var(--frame);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+}
+button { cursor: pointer; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* App shell: one tinted L-frame, the work on a white sheet inset 8px, no shadow.
+   Grid: 228px sidebar + fluid sheet; inside the sheet 24px padding and one 24px gutter. */
+.app-shell { display: grid; min-height: 100vh; grid-template-columns: 228px minmax(0, 1fr); }
+.app-sheet { margin: 8px 8px 8px 0; min-width: 0; border: 1px solid var(--hairline); border-radius: 16px; background: var(--sheet); }
+.app-content { padding: 24px; }
+.nav-item { display: flex; height: 32px; width: 100%; align-items: center; gap: 10px; border-radius: 8px; padding: 0 10px; color: var(--ink-muted); font-size: 14px; text-align: left; }
+.nav-item:hover { color: var(--ink); background: var(--active); }
+.nav-item[aria-current="page"] { color: var(--ink); background: var(--active); font-weight: 500; }
+.nav-item svg { width: 16px; height: 16px; flex: none; }
+.nav-count { margin-left: auto; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.nav-group { margin: 20px 10px 6px; font-size: 12px; color: var(--ink-muted); }
+
+.panel { border: 1px solid var(--hairline); border-radius: 8px; background: var(--sheet); }
+.section-title { font-size: 16px; line-height: 24px; font-weight: 600; }
+.page-title { font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
+
+/* Status: pale tint, dark text of the same hue. */
+.pill { display: inline-flex; flex: none; align-items: center; gap: 4px; height: 22px; border-radius: 4px; padding: 0 8px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.pill.positive, .pill.safe { background: var(--pill-positive-bg); color: var(--pill-positive-ink); }
+.pill.negative, .pill.risk { background: var(--pill-negative-bg); color: var(--pill-negative-ink); }
+.pill.warning, .pill.uncertain { background: var(--pill-warning-bg); color: var(--pill-warning-ink); border: 1px solid var(--pill-warning-edge); }
+.pill.neutral { background: var(--pill-neutral-bg); color: var(--pill-neutral-ink); }
+.pill.brand { background: var(--pill-brand-bg); color: var(--pill-brand-ink); }
+.tone-positive { color: var(--positive); }
+.tone-negative { color: var(--negative); }
+.tone-warning { color: var(--warning); }
+.notice { border-radius: 8px; padding: 12px 14px; font-size: 13px; line-height: 20px; }
+.notice.negative { background: var(--pill-negative-bg); color: var(--pill-negative-ink); }
+.notice.warning { background: var(--pill-warning-bg); color: var(--pill-warning-ink); border: 1px solid var(--pill-warning-edge); }
+.notice.neutral { background: var(--raised); color: var(--ink); }
+
+.risk-dot { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 999px; background: var(--control); }
+.risk-dot.safe { background: var(--positive); }
+.risk-dot.risk { background: var(--negative); }
+.risk-dot.uncertain { background: #d29a2a; }
+.decision-text.safe { color: var(--positive); }
+.decision-text.risk { color: var(--negative); }
+.decision-text.uncertain { color: var(--warning); }
+.risk-banner { display: flex; min-width: 12.5rem; align-items: center; gap: .55rem; border-radius: 8px; padding: .55rem .8rem; font-size: 13px; font-weight: 500; }
+.risk-banner strong { margin-left: auto; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.risk-banner.safe { color: var(--pill-positive-ink); background: var(--pill-positive-bg); }
+.risk-banner.risk { color: var(--pill-negative-ink); background: var(--pill-negative-bg); }
+.risk-banner.uncertain { color: var(--pill-warning-ink); background: var(--pill-warning-bg); border: 1px solid var(--pill-warning-edge); }
+.evidence-visual { position: relative; display: flex; height: 9.25rem; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--hairline); background: var(--raised); color: var(--ink-muted); }
+.evidence-code { position: absolute; right: .75rem; bottom: .6rem; font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); }
+.signal-badge { display: inline-flex; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.signal-badge.match { background: var(--pill-positive-bg); color: var(--pill-positive-ink); }
+.signal-badge.mismatch { background: var(--pill-negative-bg); color: var(--pill-negative-ink); }
+.signal-badge.uncertain { background: var(--pill-warning-bg); color: var(--pill-warning-ink); }
+.progress-risk [data-slot="progress-indicator"] { background: var(--negative); }
+.progress-uncertain [data-slot="progress-indicator"] { background: #d29a2a; }
+.progress-safe [data-slot="progress-indicator"] { background: var(--positive); }
+
+/* Resolution track: the case's way from PayPal dispute to PayPal action. */
+.track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 8px; }
+.track-step { padding-top: 12px; border-top: 3px solid var(--rule); }
+.track-step[data-state="done"] { border-top-color: var(--brand); }
+.track-step[data-state="current"] { border-top-color: var(--ink); }
+.track-label { font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+.track-step[data-state="done"] .track-label { color: var(--ink); }
+.track-step[data-state="current"] .track-label { color: var(--ink); font-weight: 600; }
+.track-meta { margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+
+.queue-row { display: block; width: 100%; border-radius: 8px; padding: 12px; text-align: left; }
+.queue-row:hover { background: var(--raised); }
+.queue-row[aria-current="true"] { background: var(--active); }
+.skeleton { display: block; border-radius: 4px; background: var(--active); }
+
+@media (max-width: 1023px) {
+  .app-shell { grid-template-columns: minmax(0, 1fr); }
+  .app-sheet { margin: 0; border: 0; border-radius: 0; }
+  .app-content { padding: 16px; }
+}
+@media (max-width: 640px) {
+  .risk-banner { width: 100%; }
+  .evidence-visual { height: 8rem; }
+  .track { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+}
+
+@media print {
+  body { background: #fff !important; }
+  body * { visibility: hidden !important; }
+  .print-report, .print-report * { visibility: visible !important; }
+  .print-report { position: absolute; inset: 0; width: 100%; background: #fff !important; color: #111827 !important; }
+  .print-report .panel { break-inside: avoid; border-color: #cbd5e1 !important; background: #fff !important; box-shadow: none !important; }
+  .print-report .text-muted-foreground { color: #475569 !important; }
+  .print-report button { display: none !important; }
+}
