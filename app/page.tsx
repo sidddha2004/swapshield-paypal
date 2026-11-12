@@ -16,6 +16,7 @@ import { PayPalDisputes } from "@/components/paypal-disputes"
 import heldout from "@/evaluation/results/heldout-v2.json"
 import selection from "@/evaluation/results/selection-v2.json"
 import realReport from "@/evaluation/results/real-report.json"
+import { DEMO } from "@/lib/demo"
 import { defaultApiUrl, fetchHealth, type HealthResponse } from "@/lib/live-api"
 import { evaluateSyntheticBaseline, returnCases, scoreReturn, type ReviewDecision } from "@/lib/swapshield"
 
@@ -51,13 +52,14 @@ export default function Home() {
 
   useEffect(() => {
     let active = true
+    if (DEMO) return
     void fetchHealth(defaultApiUrl).then((next) => active && setHealth(next), () => undefined)
     return () => {
       active = false
     }
   }, [])
 
-  const paypalMode = health?.paypal?.configured ? health.paypal.mode : health ? "not connected" : "…"
+  const paypalMode = DEMO ? "demo" : health?.paypal?.configured ? health.paypal.mode : health ? "not connected" : "…"
 
   function go(next: View) {
     setView(next)
@@ -111,6 +113,12 @@ export default function Home() {
         </div>
 
         <main className="app-content">
+          {DEMO && (
+            <p className="notice neutral mb-6 text-sm">
+              <strong className="font-medium">Demo mode.</strong> Every verification and agent proposal here was recorded from the real SwapShield API (GPU models, mock PayPal). Confirming applies the same safety rules but sends nothing to PayPal.{" "}
+              <a className="text-[var(--brand)] hover:underline" href="https://github.com/sidddha2004/swapshield-paypal#try-it" target="_blank" rel="noreferrer">Run it locally</a> for live verification and the PayPal sandbox.
+            </p>
+          )}
           {view === "disputes" && <PayPalDisputes onOpenCountChange={setOpenDisputes} />}
           {view === "live" && <LiveView />}
           {view === "queue" && <BenchmarkQueue />}
@@ -138,7 +146,14 @@ function LiveView() {
   return (
     <>
       <TitleRow title="Live verify" line="Run the verifier on any dispatch and return photo pair on the local GPU. Nothing is sent to PayPal from here." />
-      <LiveVerification />
+      {DEMO ? (
+        <div className="panel p-6 text-sm leading-6">
+          <p>Live verify runs DINOv2 and Qwen3-VL on your own photos, so it needs the SwapShield API on a machine with a GPU, which this hosted demo does not have.</p>
+          <p className="mt-2 text-[var(--ink-muted)]">Open <strong className="font-medium text-[var(--ink)]">Disputes</strong> to replay three real verifications, or follow the README to run everything locally.</p>
+        </div>
+      ) : (
+        <LiveVerification />
+      )}
     </>
   )
 }

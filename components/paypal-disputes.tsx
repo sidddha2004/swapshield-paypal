@@ -12,10 +12,11 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Field, UploadCard, usePreview } from "@/components/live-verification"
+import { DEMO, demoPhotos } from "@/lib/demo"
 import { defaultApiUrl } from "@/lib/live-api"
 import {
   ACTION_LABELS, draftResolution, executeResolution, formatMoney, getCase, listCases, reportUrl, syncDisputes,
-  verifyCase, type CaseAction, type PayPalCase, type PayPalStatus, type ResolutionAction,
+  verifyCase, verifyRecorded, type CaseAction, type PayPalCase, type PayPalStatus, type ResolutionAction,
 } from "@/lib/paypal-api"
 
 type LoadState = "loading" | "ready" | "offline"
@@ -201,7 +202,7 @@ export function PayPalDisputes({ onOpenCountChange }: { onOpenCountChange?: (cou
               apiUrl={apiUrl}
               item={selected}
               busy={busy}
-              onVerify={(values) => run("verify", () => verifyCase(apiUrl, selected.case_id, values))}
+              onVerify={(values) => run("verify", () => (values ? verifyCase(apiUrl, selected.case_id, values) : verifyRecorded(selected.case_id)))}
               onDraft={() => run("draft", () => draftResolution(apiUrl, selected.case_id))}
               onExecute={(body) => run("execute", () => executeResolution(apiUrl, selected.case_id, body))}
             />
@@ -223,7 +224,7 @@ function CaseDetail({ apiUrl, item, busy, onVerify, onDraft, onExecute }: {
   apiUrl: string
   item: PayPalCase
   busy: string | null
-  onVerify: (values: VerifyValues) => Promise<unknown>
+  onVerify: (values: VerifyValues | null) => Promise<unknown>
   onDraft: () => Promise<unknown>
   onExecute: (body: ExecuteBody) => Promise<unknown>
 }) {
@@ -303,7 +304,7 @@ function CaseHeader({ item }: { item: PayPalCase }) {
   )
 }
 
-function EvidenceBlock({ apiUrl, item, busy, disabled, onVerify }: { apiUrl: string; item: PayPalCase; busy: string | null; disabled: boolean; onVerify: (values: VerifyValues) => Promise<unknown> }) {
+function EvidenceBlock({ apiUrl, item, busy, disabled, onVerify }: { apiUrl: string; item: PayPalCase; busy: string | null; disabled: boolean; onVerify: (values: VerifyValues | null) => Promise<unknown> }) {
   const [dispatchImage, setDispatchImage] = useState<File | null>(null)
   const [returnImage, setReturnImage] = useState<File | null>(null)
   const [dispatchSku, setDispatchSku] = useState(item.item_sku ?? "")
@@ -326,7 +327,30 @@ function EvidenceBlock({ apiUrl, item, busy, disabled, onVerify }: { apiUrl: str
     await onVerify({ dispatchImage, returnImage, dispatchSku, returnSku, dispatchWeight, returnWeight })
   }
 
-  const form = (
+  const photos = DEMO ? demoPhotos(item.case_id) : null
+  const demoPair = photos && (
+    <div className="grid grid-cols-2 gap-4">
+      {([["Dispatch photo", photos.dispatch], ["Returned item photo", photos.return]] as const).map(([label, src]) => (
+        <figure key={label} className="overflow-hidden rounded-lg border border-[var(--hairline)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt={`${label} for ${item.item_name ?? "the disputed item"}`} className="h-44 w-full bg-white object-contain" />
+          <figcaption className="border-t border-[var(--rule)] px-3 py-2 text-xs text-[var(--ink-muted)]">{label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  )
+
+  const form = DEMO ? (
+    <div className="space-y-4">
+      {demoPair}
+      <div className="flex flex-col-reverse justify-between gap-3 sm:flex-row sm:items-center">
+        <p className="text-xs text-[var(--ink-muted)]">Demo: replays the result the real models produced for these photos. Lamp and table photos: Amazon Berkeley Objects (CC BY 4.0).</p>
+        <Button type="button" onClick={() => void onVerify(null)} variant={verification ? "outline" : "default"} disabled={busy !== null}>
+          {busy === "verify" ? <><LoaderCircle className="animate-spin" /> Verifying…</> : <><ScanLine /> {verification ? "Verify again" : "Verify returned item"}</>}
+        </Button>
+      </div>
+    </div>
+  ) : (
     <form onSubmit={submit} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         <UploadCard id={`dispatch-${item.case_id}`} title="Dispatch photo" subtitle="Taken when the order was packed" file={dispatchImage} preview={dispatchPreview} onChange={setDispatchImage} />
@@ -360,6 +384,7 @@ function EvidenceBlock({ apiUrl, item, busy, disabled, onVerify }: { apiUrl: str
 
       {verification && (
         <div className="mt-5 space-y-4">
+          {DEMO && demoPair}
           <dl className="grid grid-cols-2 gap-4 rounded-lg bg-[var(--raised)] p-4 sm:grid-cols-3 2xl:grid-cols-5">
             <Stat label="Calibrated probability" value={percent(verification.risk.probability)} />
             <Stat label="Visual similarity" value={percent(verification.features.vision_similarity)} />

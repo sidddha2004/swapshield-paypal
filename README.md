@@ -9,7 +9,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Built for the **PayPal AI Hackathon** · [Demo video](#links) · [Postman collection](postman/README.md) · [Benchmark](docs/EVALUATION.md)
+Built for the **PayPal AI Hackathon** · [Live demo](#links) · [Demo video](#links) · [Postman collection](postman/README.md) · [Benchmark](docs/EVALUATION.md)
 
 </div>
 
@@ -100,6 +100,15 @@ Full protocol, all methods and reproduction commands: [docs/EVALUATION.md](docs/
 Model details: [docs/MODEL_CARD.md](docs/MODEL_CARD.md).
 
 ## Try it
+
+### Hosted demo (no install)
+
+The [live demo](#links) runs the full dispute desk in your browser. It has no GPU, so
+each verification and agent proposal replays the result **recorded from the real
+SwapShield API** for three disputes: a matching lamp (refund), a different table
+(evidence to PayPal) and dark photos of a mouse (ask for clearer photos). Confirming
+applies the same safety rules as the server and sends nothing to PayPal. Hosting
+config: `vercel.json`; demo data: `public/demo/`; replay logic: `lib/demo.ts`.
 
 ### Requirements
 
@@ -215,6 +224,7 @@ The benchmark uses Amazon Berkeley Objects images (CC BY 4.0); setup and attribu
 
 ## Links
 
+- **Live demo:** **[fill in: Vercel link]**
 - **Code:** https://github.com/sidddha2004/swapshield-paypal
 - **Demo video:** **[fill in]**
 - **Postman collection:** **[fill in]**

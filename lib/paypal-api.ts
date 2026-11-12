@@ -1,3 +1,4 @@
+import { DEMO, demoDraft, demoExecute, demoGetCase, demoListCases, demoReportUrl, demoSync, demoVerify } from "@/lib/demo"
 import { responseError, type VerificationResponse } from "@/lib/live-api"
 
 export type ResolutionAction = "refund_full" | "refund_partial" | "submit_evidence" | "request_photos"
@@ -73,14 +74,17 @@ async function call<T>(apiUrl: string, path: string, init?: RequestInit): Promis
   return payload as T
 }
 
-export const listCases = (apiUrl: string) =>
-  call<{ cases: PayPalCase[]; paypal: PayPalStatus }>(apiUrl, "/v1/cases")
+export const listCases = (apiUrl: string): Promise<{ cases: PayPalCase[]; paypal: PayPalStatus }> =>
+  DEMO ? demoListCases() : call(apiUrl, "/v1/cases")
 
-export const getCase = (apiUrl: string, caseId: string) =>
-  call<PayPalCase>(apiUrl, `/v1/cases/${encodeURIComponent(caseId)}`)
+export const getCase = (apiUrl: string, caseId: string): Promise<PayPalCase> =>
+  DEMO ? demoGetCase(caseId) : call(apiUrl, `/v1/cases/${encodeURIComponent(caseId)}`)
 
-export const syncDisputes = (apiUrl: string) =>
-  call<{ synced: number; mode: string }>(apiUrl, "/v1/paypal/sync", { method: "POST" })
+export const syncDisputes = (apiUrl: string): Promise<{ synced: number; mode: string }> =>
+  DEMO ? demoSync() : call(apiUrl, "/v1/paypal/sync", { method: "POST" })
+
+/** Demo mode only: replay the verification recorded from the real API for this case. */
+export const verifyRecorded = (caseId: string): Promise<PayPalCase> => demoVerify(caseId)
 
 export function verifyCase(
   apiUrl: string,
@@ -108,18 +112,20 @@ export function verifyCase(
   return call<PayPalCase>(apiUrl, `/v1/cases/${encodeURIComponent(caseId)}/verify`, { method: "POST", body: form })
 }
 
-export const draftResolution = (apiUrl: string, caseId: string) =>
-  call<PayPalCase>(apiUrl, `/v1/cases/${encodeURIComponent(caseId)}/resolution/draft`, { method: "POST" })
+export const draftResolution = (apiUrl: string, caseId: string): Promise<PayPalCase> =>
+  DEMO ? demoDraft(caseId) : call(apiUrl, `/v1/cases/${encodeURIComponent(caseId)}/resolution/draft`, { method: "POST" })
 
-export const executeResolution = (apiUrl: string, caseId: string, body: ExecuteBody) =>
-  call<PayPalCase>(apiUrl, `/v1/cases/${encodeURIComponent(caseId)}/resolution/execute`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  })
+export const executeResolution = (apiUrl: string, caseId: string, body: ExecuteBody): Promise<PayPalCase> =>
+  DEMO
+    ? demoExecute(caseId, body)
+    : call(apiUrl, `/v1/cases/${encodeURIComponent(caseId)}/resolution/execute`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
 
 export const reportUrl = (apiUrl: string, caseId: string) =>
-  `${base(apiUrl)}/v1/cases/${encodeURIComponent(caseId)}/report.pdf`
+  DEMO ? demoReportUrl(caseId) : `${base(apiUrl)}/v1/cases/${encodeURIComponent(caseId)}/report.pdf`
 
 export const ACTION_LABELS: Record<ResolutionAction, string> = {
   refund_full: "Full refund",
